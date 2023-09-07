@@ -1,7 +1,7 @@
 from src.channel import Channel
 
 if __name__ == '__main__':
-    moscowpython = Channel('UC-OVMPlMA3-YCIeg4z5z23A')
+    moscowpython = Channel('UC-OVMPlMA3-YCIeg4z5z23A') # channel_id = 'UCwHL6WHUarjGfUM_586me8w' HighLoad Channel
     moscowpython.print_info()
 
     """
