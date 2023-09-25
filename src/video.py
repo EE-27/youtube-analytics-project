@@ -48,10 +48,10 @@ class PLVideo:
         json_load_from_api = json.dumps(self.playlist_videos, indent=2, ensure_ascii=False)
         plvideo_data = json.loads(json_load_from_api)
         self.plvideo_data = plvideo_data
-        # print(self.video_data)
-        # print(self.plvideo_data)
+        print(self.video_data)
+        print(self.plvideo_data)
 
     def __str__(self):
         return self.video_data['items'][0]['snippet']['title']
 
-# pl = PLVideo('4fObz_qw9u4', 'PLv_zOGKKxVph_8g2Mqc3LMhj0M_BfasbC')
+pl = PLVideo('4fObz_qw9u4', 'PLv_zOGKKxVph_8g2Mqc3LMhj0M_BfasbC')
