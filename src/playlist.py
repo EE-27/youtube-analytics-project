@@ -7,12 +7,14 @@ from googleapiclient.discovery import build
 
 import isodate
 class PlayList:
+
+    api_key: str = os.getenv('API_YT')
+    youtube = build('youtube', 'v3', developerKey=api_key)
     def __init__(self, playlist_id):
         self.playlist_id = playlist_id
-        api_key: str = os.getenv('API_YT')
-        youtube = build('youtube', 'v3', developerKey=api_key)
 
-        playlist_videos = youtube.playlistItems().list(playlistId=playlist_id,
+
+        playlist_videos = PlayList.youtube.playlistItems().list(playlistId=playlist_id,
                                                        part='contentDetails',
                                                        maxResults=50,
                                                        ).execute()
@@ -24,15 +26,17 @@ class PlayList:
 
         self.video_id = self.plvideo_data['items'][0]['contentDetails']['videoId']
 
-        self.video_response = youtube.videos().list(part='snippet,statistics,contentDetails,topicDetails',
+        self.video_response = PlayList.youtube.videos().list(part='snippet,statistics,contentDetails,topicDetails',
                                                id=self.video_id
                                                ).execute()
         json_load_from_api = json.dumps(self.video_response, indent=2, ensure_ascii=False)
         video_data = json.loads(json_load_from_api)
         self.video_data = video_data
         self.channel_id = self.video_data['items'][0]['snippet']['channelId']
+
         #
-        playlists = youtube.playlists().list(channelId=self.channel_id,  # title
+
+        playlists = PlayList.youtube.playlists().list(channelId=self.channel_id,  # title
                                              part='contentDetails,snippet',
                                              maxResults=50,
                                              ).execute()
@@ -45,9 +49,15 @@ class PlayList:
                 break
 
         self.title = playlist_title  # title
+
+        #
+
         self.url = f"https://www.youtube.com/playlist?list={self.playlist_id}"
-        video_ids: list[str] = [video['contentDetails']['videoId'] for video in playlist_videos['items']]
-        video_response = youtube.videos().list(part='contentDetails,statistics',
+    @property
+    def total_duration(self):
+
+        video_ids: list[str] = [video['contentDetails']['videoId'] for video in self.playlist_videos['items']]
+        video_response = PlayList.youtube.videos().list(part='contentDetails,statistics',
                                                id=','.join(video_ids)
                                                ).execute()
         json_load_from_api = json.dumps(video_response, indent=2, ensure_ascii=False)
@@ -75,17 +85,21 @@ class PlayList:
             mm.append(int(x[1]))
             ss.append(int(x[2]))
 
-         # total_seconds = sum(mm) * 60 + sum(ss)  # Convert minutes to seconds and add seconds
-
-        # # Calculate hours, minutes, and seconds
-        # hours = total_seconds // 3600
-        # minutes = (total_seconds % 3600) // 60
-        # seconds = total_seconds % 60
 
         time = datetime.timedelta(hours=sum(hh), minutes=sum(mm), seconds=sum(ss))
-        # Format as "hh:mm:ss"
-        #
+
         self.total_duration = time
+        self.time = time
+        return self.time
+
+    def __str__(self):
+        return self.total_duration
+
+    @total_duration.setter
+    def total_duration(self, value):
+        self.time = value
+        return value
+
 
     def show_best_video(self):
         sorted_videos = sorted(self.playlist_data['items'], key=lambda x: int(x['statistics']['likeCount']), reverse=True)
