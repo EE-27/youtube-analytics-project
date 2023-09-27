@@ -22,10 +22,16 @@ class Video:
         self.video_data = video_data
 
         #attributes
-        self.video_title = self.video_data['items'][0]['snippet']['title']
-        self.video_url = self.video_data['items'][0]['snippet']['thumbnails']['default']['url']
-        self.view_count = self.video_data['items'][0]['statistics']['viewCount']
-        self.like_count = self.video_data['items'][0]['statistics']['likeCount']
+        try:
+            self.title = self.video_data['items'][0]['snippet']['title']
+            self.video_url = self.video_data['items'][0]['snippet']['thumbnails']['default']['url']
+            self.view_count = self.video_data['items'][0]['statistics']['viewCount']
+            self.like_count = self.video_data['items'][0]['statistics']['likeCount']
+        except IndexError:
+            self.title = None
+            self.video_url = None
+            self.view_count = None
+            self.like_count = None
 
 
     def __str__(self):
@@ -48,4 +54,4 @@ class PLVideo(Video):
     def __str__(self):
         return self.video_data['items'][0]['snippet']['title']
 
-# pl = PLVideo('4fObz_qw9u4', 'PLv_zOGKKxVph_8g2Mqc3LMhj0M_BfasbC')
+#  pl = PLVideo('4fObz_qw9u4', 'PLv_zOGKKxVph_8g2Mqc3LMhj0M_BfasbC')
